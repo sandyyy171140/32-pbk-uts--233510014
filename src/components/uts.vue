@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="container">
-      <h1>Steam Game Purchase List</h1>
+      <h1> Game Purchase List</h1>
       <form @submit.prevent="addGame">
         <input
           v-model.trim="newGameName"
@@ -39,8 +39,8 @@
               <span class="name">{{ game.name }}</span>
               <span class="price">Rp {{ formatPrice(game.price) }}</span>
             </div>
-            <button @click="removeGame(index)" class="remove-button">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <button @click="removeGame(index)" class="remove-button" aria-label="Remove game">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
@@ -65,13 +65,13 @@ export default {
       newGameName: '',
       newGamePrice: '',
       games: [],
-      idCounter: 0
-    }
+      idCounter: 0,
+    };
   },
   computed: {
     hasPurchased() {
       return this.games.some(game => game.purchased);
-    }
+    },
   },
   mounted() {
     this.loadGames();
@@ -103,20 +103,20 @@ export default {
         alert("Game title cannot be empty");
         return;
       }
-      
+
       const price = parseFloat(this.newGamePrice);
       if (isNaN(price) || price < 0) {
         alert("Price must be a positive number");
         return;
       }
-      
+
       this.games.push({
         id: this.generateId(),
         name: this.newGameName.trim(),
         price: price,
         purchased: false,
       });
-      
+
       this.newGameName = '';
       this.newGamePrice = '';
     },
@@ -131,37 +131,35 @@ export default {
         alert("No games selected for saving");
         return;
       }
-      
+
       try {
         localStorage.setItem('purchasedGames', JSON.stringify(purchasedGames));
-        const listText = purchasedGames.map(g => 
+        const listText = purchasedGames.map(g =>
           `${g.name} (Rp ${this.formatPrice(g.price)})`
-        ).join('\n');
+        ).join('\\n');
         alert(`Saved ${purchasedGames.length} games:\n\n${listText}`);
       } catch (e) {
         console.error("Save failed:", e);
         alert("Failed to save data. Please try again.");
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style>
-/* Base Styles */
 :root {
-  --primary: #00adee; /* Steam blue */
-  --primary-dark: #0088cc;
-  --secondary: #ff7b26; /* Steam orange */
-  --dark: #1b2838; /* Steam dark blue */
-  --darker: #171a21; /* Steam darker blue */
-  --light: #e6e6e6;
-  --success: #5ba32b; /* Steam green */
-  --warning: #f2a60c;
-  --danger: #d63c3c;
-  --gray: #8f98a0;
-  --dark-gray: #2a3f5a;
-  --container-bg: rgba(23, 26, 33, 0.85); /* Steam container color with transparency */
+  --primary: #4361ee;
+  --primary-dark: #3a0ca3;
+  --secondary: #f72585;
+  --dark: #1a1a2e;
+  --darker: #16213e;
+  --light: #f8f9fa;
+  --success: #4cc9f0;
+  --warning: #f8961e;
+  --danger: #ef233c;
+  --gray: #6c757d;
+  --dark-gray: #343a40;
 }
 
 * {
@@ -172,7 +170,7 @@ export default {
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, var(--darker), var(--dark));
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
   color: var(--light);
   min-height: 100vh;
   display: flex;
@@ -183,19 +181,54 @@ body {
 }
 
 .app-container {
+  position: relative;
   width: 100%;
   max-width: 600px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem 1.5rem;
+  overflow: visible;
+  z-index: 0;
+}
+
+.app-container::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: url('https://wallpaperaccess.com/full/306739.jpg') no-repeat center center/cover;
+  filter: brightness(0.7) blur(4px);
+  z-index: -1;
+  pointer-events: none;
 }
 
 /* Container */
 .container {
-  background: var(--container-bg);
-  backdrop-filter: blur(8px);
-  border-radius: 8px;
+  position: relative;
+  background: url('https://images.akamai.steamusercontent.com/ugc/493519450183038433/7766E6F16031671F6F1049919D0A28AA8E6B9599/')
+    no-repeat center center/cover;
+  border-radius: 16px;
   padding: 2rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   animation: fadeIn 0.5s ease-out;
+  overflow: visible;
+}
+
+.container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(26, 26, 46, 0.6);
+  border-radius: 16px;
+  z-index: 0;
+}
+
+.container > * {
+  position: relative;
+  z-index: 1;
 }
 
 @keyframes fadeIn {
@@ -210,7 +243,7 @@ h1 {
   color: var(--light);
   text-align: center;
   margin-bottom: 1.5rem;
-  background: linear-gradient(to right, var(--primary), var(--secondary));
+  background: linear-gradient(to right, #4361ee, #4cc9f0);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -226,7 +259,7 @@ h1::after {
   transform: translateX(-50%);
   width: 80px;
   height: 3px;
-  background: linear-gradient(to right, var(--primary), var(--secondary));
+  background: linear-gradient(to right, #4361ee, #4cc9f0);
   border-radius: 3px;
 }
 
@@ -241,27 +274,28 @@ form {
 input {
   padding: 0.75rem 1rem;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   background: rgba(255, 255, 255, 0.1);
   color: var(--light);
   font-size: 1rem;
   transition: all 0.3s ease;
+  min-width: 0;
 }
 
 input:focus {
   outline: none;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.2);
   box-shadow: 0 0 0 2px var(--primary);
 }
 
 input::placeholder {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 /* Buttons */
 button {
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   padding: 0.75rem 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -280,20 +314,19 @@ button {
 .add-button:hover {
   background: var(--primary-dark);
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .save-button {
   width: 100%;
   background: var(--success);
-  color: white;
+  color: var(--dark);
   font-size: 1rem;
   margin-top: 1.5rem;
   padding: 1rem;
 }
 
 .save-button:hover:not(:disabled) {
-  background: #4a8c24;
+  background: #3aa8d8;
   transform: translateY(-2px);
 }
 
@@ -313,7 +346,7 @@ button {
 }
 
 .remove-button:hover {
-  background: rgba(214, 60, 60, 0.2);
+  background: rgba(239, 35, 60, 0.2);
 }
 
 /* Game List */
@@ -326,6 +359,8 @@ button {
 
 .game-list {
   list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 .game-item {
@@ -334,7 +369,7 @@ button {
   gap: 1rem;
   padding: 1rem;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 4px;
+  border-radius: 8px;
   margin-bottom: 0.75rem;
   transition: all 0.3s ease;
 }
