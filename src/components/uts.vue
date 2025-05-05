@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div class="app-container">
     <h1>Game Purchase List</h1>
-    <form @submit.prevent="addGame">
+    <form @submit.prevent="addGame" class="game-form">
       <input
         v-model.trim="newGameName"
         type="text"
@@ -19,7 +19,7 @@
       <button type="submit">Add Game</button>
     </form>
 
-    <div>
+    <div class="filter-container">
       <label>
         <input type="checkbox" v-model="showUnpurchased" />
         Show only unpurchased games
@@ -27,10 +27,11 @@
     </div>
 
     <div>
-      <ul>
+      <ul class="game-list">
         <li
           v-for="(game, index) in filteredGames"
           :key="game.id"
+          class="game-item"
         >
           <input
             type="checkbox"
@@ -54,7 +55,7 @@ export default {
       newGamePrice: '',
       games: [],
       idCounter: 0,
-      showUnpurchased: false, // Menambahkan properti untuk filter
+      showUnpurchased: false,
     };
   },
   mounted() {
@@ -62,7 +63,6 @@ export default {
   },
   computed: {
     filteredGames() {
-      // Mengembalikan daftar game yang difilter berdasarkan status purchased
       return this.showUnpurchased
         ? this.games.filter(game => !game.purchased)
         : this.games;
@@ -102,7 +102,7 @@ export default {
         id: ++this.idCounter,
         name: this.newGameName.trim(),
         price: price,
-        purchased: false, // Menambahkan properti purchased
+        purchased: false,
       };
 
       this.games.push(newGame);
@@ -124,8 +124,43 @@ export default {
 </script>
 
 <style>
-.completed {
-  text-decoration: line-through;
-  color: gray;
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 20px;
+}
+
+.app-container {
+  max-width: 600px;
+  margin: 0 auto;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+}
+
+.game-form {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.game-form input[type="text"],
+.game-form input[type="number"] {
+  flex: 1;
+  padding: 10px;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.game-form button {
+  padding: 10px 15px;
 }
 </style>
