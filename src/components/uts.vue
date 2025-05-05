@@ -26,6 +26,7 @@
             :key="game.id"
           >
             <span>{{ game.name }}</span> - <span>Rp {{ formatPrice(game.price) }}</span>
+            <button @click="removeGame(index)">Remove</button>
           </li>
         </ul>
         <p v-if="games.length === 0">No games added yet</p>
@@ -87,6 +88,12 @@
         this.saveGames();
         this.newGameName = '';
         this.newGamePrice = '';
+      },
+      removeGame(index) {
+        if (confirm(`Are you sure you want to remove "${this.games[index].name}"?`)) {
+          this.games.splice(index, 1);
+          this.saveGames();
+        }
       },
       saveGames() {
         localStorage.setItem('purchasedGames', JSON.stringify(this.games));
