@@ -1,36 +1,24 @@
-<script>
-export default {
-  name: 'GamePurchaseList',
-  data() {
-    return {
-      games: [],
-    };
-  },
-  mounted() {
-    this.loadGames();
-  },
-  methods: {
-    formatPrice(value) {
-      if (!value) return "0";
-      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    },
-    loadGames() {
-      try {
-        const savedGames = localStorage.getItem('purchasedGames');
-        if (savedGames) {
-          this.games = JSON.parse(savedGames);
-        }
-      } catch (e) {
-        console.error("Failed to load data:", e);
-      }
-    },
-  },
-};
-</script>
-
 <template>
     <div>
       <h1>Game Purchase List</h1>
+      <form @submit.prevent="addGame">
+        <input
+          v-model.trim="newGameName"
+          type="text"
+          placeholder="Game Title"
+          required
+        />
+        <input
+          v-model.number="newGamePrice"
+          type="number"
+          placeholder="Price (Rp)"
+          min="0"
+          step="1000"
+          required
+        />
+        <button type="submit">Add Game</button>
+      </form>
+  
       <div>
         <ul>
           <li
@@ -45,5 +33,65 @@ export default {
     </div>
   </template>
   
-
+  <script>
+  export default {
+    name: 'GamePurchaseList',
+    data() {
+      return {
+        newGameName: '',
+        newGamePrice: '',
+        games: [],
+        idCounter: 0,
+      };
+    },
+    mounted() {
+      this.loadGames();
+    },
+    methods: {
+      formatPrice(value) {
+        if (!value) return "0";
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      },
+      loadGames() {
+        try {
+          const savedGames = localStorage.getItem('purchasedGames');
+          if (savedGames) {
+            this.games = JSON.parse(savedGames);
+            if (this.games.length > 0) {
+              this.idCounter = Math.max(...this.games.map(g => g.id));
+            }
+          }
+        } catch (e) {
+          console.error("Failed to load data:", e);
+        }
+      },
+      addGame() {
+        if (!this.newGameName.trim()) {
+          alert("Game title cannot be empty");
+          return;
+        }
+  
+        const price = parseFloat(this.newGamePrice);
+        if (isNaN(price) || price < 0) {
+          alert("Price must be a positive number");
+          return;
+        }
+  
+        const newGame = {
+          id: ++this.idCounter,
+          name: this.newGameName.trim(),
+          price: price,
+        };
+  
+        this.games.push(newGame);
+        this.saveGames();
+        this.newGameName = '';
+        this.newGamePrice = '';
+      },
+      saveGames() {
+        localStorage.setItem('purchasedGames', JSON.stringify(this.games));
+      },
+    },
+  };
+  </script>
   
