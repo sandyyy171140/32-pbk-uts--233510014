@@ -25,7 +25,11 @@
             v-for="(game, index) in games"
             :key="game.id"
           >
-            <span>{{ game.name }}</span> - <span>Rp {{ formatPrice(game.price) }}</span>
+            <input
+              type="checkbox"
+              v-model="game.purchased"
+            />
+            <span :class="{ completed: game.purchased }">{{ game.name }}</span> - <span>Rp {{ formatPrice(game.price) }}</span>
             <button @click="removeGame(index)">Remove</button>
           </li>
         </ul>
@@ -82,6 +86,7 @@
           id: ++this.idCounter,
           name: this.newGameName.trim(),
           price: price,
+          purchased: false, // Menambahkan properti purchased
         };
   
         this.games.push(newGame);
@@ -101,4 +106,11 @@
     },
   };
   </script>
+  
+  <style>
+  .completed {
+    text-decoration: line-through;
+    color: gray;
+  }
+  </style>
   
